@@ -1,28 +1,36 @@
 <template>
     <div class="main-products">
 
-        <div class="product" v-for="product in productItem" :key="product.id">
-            <div class="image">
-                <img :src="product.thumbnail" alt="">
-            </div>
+        <div v-for="product in productItem" :key="product.id">
+            <router-link :to="{name:'ShowProduct',params: { id:product.id }}" class="product">
+                    <div class="image">
+                        <img :src="product.thumbnail" alt="">
+                    </div>
 
-            <div class="product-category">
-                {{ product.brand }}
-            </div>
+                    <div class="product-category">
+                        {{ product.brand }}
+                    </div>
 
-            <div class="product-title">
-                {{  product.title }}
-            </div>
+                    <div class="ratings">
+                        <span v-for="rate in Math.round(product.rating)" :key="rate" class="material-symbols-outlined star-symbol">
+                            star
+                        </span>
+                    </div>
 
-            <div class="price-container">
-                <div class="price">
-                    ${{  product.price }}
-                </div>
+                    <div class="product-title">
+                        {{  product.title }}
+                    </div>
 
-                <div class="discount-price">
-                    ${{  product.discountPercentage }}
-                </div>
-            </div>
+                    <div class="price-container">
+                        <div class="price">
+                            ${{  product.price }}
+                        </div>
+
+                        <div class="discount-price">
+                            ${{  product.discountPercentage }}
+                        </div>
+                    </div>
+            </router-link>
         </div>
 
     </div>
@@ -31,11 +39,11 @@
 <script setup>
     import { defineProps } from 'vue';
 
-    defineProps({
-        productItem: {
-            type:Array
-        }
-    })
+   defineProps({
+                    productItem: {
+                        type:Array
+                    }
+                })
 </script>
 <style scoped>
 /* MAIN PRODUCT */
@@ -46,12 +54,16 @@
         width: 100%;
     }
 
+    a { 
+        text-decoration: none;
+        color:var(--Dark-grayish-blue)
+    }
+
     .main-products .product{
-        border-radius: 5px;
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid rgba(12,236,169,0.329);
         height: 100%;
         width: 200px;
-        box-shadow: 2px 2px 3px rgba(255, 145, 0, 0.3);
+        box-shadow: 10px 8px 1px rgba(12, 236, 169, 0.329);
         padding: 10px;
         display: flex;
         flex-direction: column;
@@ -111,14 +123,52 @@
         align-self: end;
     }
 
+    .star-symbol{
+        color: rgb(218, 221, 12);
+        font-size: 18px;
+    }
+
     @media(width <= 768px){
         .main-products{
             display: grid;
-            grid-template-columns: 100%;
+            grid-template-columns: repeat(3,35%);
             justify-content: center;
             align-items: center;
             margin:auto;
             width: 100%;
+        }
+    }
+
+    @media(width <= 425px){
+        .main-products{
+            display: grid;
+            grid-template-columns: repeat(2,50%);
+            justify-content: center;
+            align-items: center;
+            margin:auto;
+            width: 100%;
+        }
+
+        .main-products .product{
+            border: 1px solid rgba(12,236,169,0.329);
+            height: 100%;
+            width: 150px;
+            box-shadow: 10px 8px 1px rgba(12, 236, 169, 0.329);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--White);
+        }
+    }
+
+    @media(width <= 320px){
+        .main-products{
+           grid-template-columns: 100%;
+        }
+
+        .main-products .product{
+            width: 250px;
         }
     }
 </style>

@@ -98,7 +98,7 @@
 
      .main-navigation-item ul{
         display: flex;
-        gap: 10px;
+        gap: 15px;
         padding: 10px;
         list-style: none;
         overflow: scroll;
@@ -116,11 +116,11 @@
         justify-content: center;
         align-items: center;
         padding: 10px;
-        border-radius: 10px;
-        /* box-shadow: 2px 2px 5px rgba(0,0,0,0.2); */
+        /* border-radius: 10px; */
+        box-shadow: 8px 5px 1px rgba(12,236,169,0.329);
         height: 100px;
         min-width: 200px;
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid rgba(12,236,169,0.329);
         background-color: var(--White);
     }
 

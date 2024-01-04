@@ -5,6 +5,11 @@ const routes = [
     path: '/',
     name: 'LandingPage',
     component:  () => import('../view/LandingPage')
+  },
+  {
+    path: '/product/:id',
+    name:'ShowProduct',
+    component: () => import('../view/ShowProduct')
   }
 ]
 

@@ -3,32 +3,18 @@
         <!-- DESKTOP -->
         <div class="image-container">
             <div class="wrapper">
-                <div class="image-header"
+                <div class="image-header" ref="imageContainer"
                      @click="OpenSlideShow">
                 </div>
             </div>
 
             <div class="image-thumbnail">
 
-                <div class="thumbnail current">
-                    <img src="../assets/image-product-1.jpg" 
+                <div class="thumbnail" v-for="(image,index) in product.images" :key="image">
+                    <img :src="image" 
                          alt=""
-                         id="thumbnail-image">
-                </div>
-
-                <div class="thumbnail">
-                    <img src="../assets/image-product-1.jpg" alt=""
-                        id="thumbnail-image">
-                </div>
-
-                <div class="thumbnail">
-                    <img src="../assets/image-product-1.jpg" alt=""
-                        id="thumbnail-image">
-                </div>
-
-                <div class="thumbnail">
-                    <img src="../assets/image-product-1.jpg" alt=""
-                        id="thumbnail-image">
+                         id="thumbnail-image"
+                         @click="changeHeaderPhoto(index)">
                 </div>
 
             </div>
@@ -53,24 +39,22 @@
 
         <div class="item-description-container">
             <div class="company">
-                <h4 >sneaker company</h4>
+                <h4 >{{ product.brand }}</h4>
             </div>
 
             <div class="item-title">
-                <h1 >Fall Limited Edition Sneakers</h1>
+                <h1 >{{ product.title }}</h1>
             </div>
             
            <div class="item-description">
                 <p>
-                    These low-profile sneakers are your perfect casuar wear companion
-                    .Featuring a durable rubber outer sole. they'll withstand everything
-                    the weather can offer
+                    {{ product.description }}
                 </p>
            </div>
 
            <div class="pricing">
                 <div class="price">
-                    <h1>$125.00</h1>
+                    <h1>${{ product.price }}</h1>
 
                     <div class="discount">50%</div>
                 </div>
@@ -84,7 +68,7 @@
            <div class="btn-container">
                 <div class="range-btn">
 
-                    <div class="minus-btn" @click="itemValue--">
+                    <div class="minus-btn" @click="itemValue<=1 ? itemValue : itemValue--">
                         <img src="../assets/icon-minus.svg" 
                              alt="">
                     </div>
@@ -93,7 +77,8 @@
                         {{ itemValue }}
                     </div>
 
-                    <div class="plus-btn" @click="itemValue++">
+                    <div class="plus-btn" 
+                         @click="itemValue<=product.stock ? itemValue++ : product.stock">
                         <img src="../assets/icon-plus.svg" 
                              alt="">
                     </div>
@@ -165,10 +150,16 @@
 </template>
   
 <script setup>
-    import { ref } from 'vue'
+    import { onMounted, ref } from 'vue'
+    import { products } from '@/store/productsStore';
+    import { useRoute } from 'vue-router';
 
-    let itemValue = ref(0)
+    let itemValue = ref(1)
     const productSlideShowDiv  = ref(null)
+    const router = useRoute()
+    const useProduct = products()
+    const product = ref('')
+    const imageContainer = ref(null)
 
     const closeSlideShow = () => {
         productSlideShowDiv.value.classList.toggle('active')
@@ -177,6 +168,20 @@
     const OpenSlideShow = () => {
         productSlideShowDiv.value.classList.toggle('active')
     }
+
+    const changeHeaderPhoto = (index) => {
+        imageContainer.value.style.background = `url(${product.value.images[index]}) no-repeat center`
+        imageContainer.value.style.backgroundSize = 'cover'
+    }
+
+    onMounted(async () => {
+        await useProduct.getSingleProduct(router.params.id)
+        product.value = useProduct.product
+
+        // CHANGE HEADER IMAGE
+        imageContainer.value.style.background = `url(${product.value.thumbnail}) no-repeat center`
+        imageContainer.value.style.backgroundSize = 'cover'
+    })
 </script>
   
 
