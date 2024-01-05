@@ -8,8 +8,13 @@
                      @click="OpenSideMenu">
             </div>
 
-            <div class="icon">
+            <div class="icon-desktop">
                 <img src="../assets/vue-logo.jpg" 
+                     alt="">
+            </div>
+
+            <div class="icon-mobile">
+                <img src="../assets/logo.png" 
                      alt="">
             </div>
         </div>
@@ -137,7 +142,7 @@
         position: sticky;
         top: 0;
         background-color: var(--White);
-        z-index: 30000;
+        z-index: 1;
     }
 
     .container .navigation{
@@ -158,37 +163,13 @@
         overflow: scroll;
     }
 
-    .main-navigation-item ul{
-        list-style: none;
-        height: 100%;
-        display: flex;
-    }
-
-    .main-navigation-item ul li{
-        margin-right: 20px;
-        height: 100%;
-        width: 100%;
-        color: var(--Dark-grayish-blue);
-        display: flex;
-        justify-content: center;
-        border-bottom: 3px inset transparent;
-        align-items: center;
-        transition: border-color 0.2s ease;
-        cursor: pointer;
-    }
-
-
-    .main-navigation-item ul li:hover{
-        border-color: var(--Orange);
-    }
-
-    .navigation .icon img{
+    .navigation .icon-desktop img{
         height: inherit;
         width: inherit;
         object-fit: cover;
     }
 
-    .navigation .icon{
+    .navigation .icon-desktop{
         height: 50px;
         width: 200px;
         object-fit: cover;
@@ -196,8 +177,12 @@
         align-items: center;
         font-size: 25px;
     }
+
+    .navigation .icon-mobile{
+       display: none;
+    }
     
-    .navigation .icon .subheader{
+    .navigation .icon-desktop .subheader{
        position: relative;
        top:1px;
        font-weight: 700;
@@ -392,6 +377,25 @@
         .side-menu .main-menu ul{
           font-weight: 700;
         }
+    }
+
+    @media(width <= 320px){
+        .navigation .icon-desktop{
+            display: none;
+        }
+
+        .navigation .icon-mobile{
+            display: block;
+            height: 30px;
+            /* width: 30px; */
+        }
+
+        .navigation .icon-mobile img{
+            width: inherit;
+            height: inherit;
+            object-fit: cover;
+        }
+
     }
 
     @keyframes slide {

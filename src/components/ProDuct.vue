@@ -72,9 +72,9 @@
     }
 
     .container .product:hover{
-        scale: 1.1;
+        /* scale: 1.1; */
         transition: 0.3s;
-        box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+        box-shadow: 20px 8px 1px rgba(12, 236, 169, 0.329);
     }
 
     .main-products .product .image{
@@ -139,7 +139,7 @@
         }
     }
 
-    @media(width <= 425px){
+    @media(width <= 426px){
         .main-products{
             display: grid;
             grid-template-columns: repeat(2,50%);

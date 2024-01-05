@@ -9,13 +9,9 @@
             </div>
 
             <div class="image-thumbnail">
-
-                <div class="thumbnail" v-for="(image,index) in product.images" :key="image">
-                    <img :src="image" 
-                         alt=""
-                         id="thumbnail-image"
-                         @click="changeHeaderPhoto(index)">
-                </div>
+                
+                <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhoto" 
+                                    :images="product.images" />
 
             </div>
         </div>
@@ -24,17 +20,19 @@
         <div class="image-container-mobile">
             <div class="wrapper">
 
-                <div class="prev-icon">
+                <div class="prev-icon" @click="mobilePrev">
                     <img src="../assets/icon-previous.svg" alt="">
                 </div>
 
-                <div class="image-header"></div>
+                <div class="image-header" ref="mobileImageContainer"></div>
 
-                <div class="next-icon">
+                <div class="next-icon" @click="mobileNext">
                     <img src="../assets/icon-next.svg" alt="">
                 </div>
                 
             </div>
+
+            <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhotoMobile" :images="product.images" />
         </div>
 
         <div class="item-description-container">
@@ -109,40 +107,21 @@
             <div class="image-container">
                 <div class="wrapper">
 
-                    <div class="prev-icon">
+                    <div class="prev-icon" @click="prevImage">
                         <img src="../assets/icon-previous.svg" alt="">
                     </div>
 
-                    <div class="image-header"></div>
+                    <div class="image-header" ref="slideShowImageHeader"></div>
 
-                    <div class="next-icon">
+                    <div class="next-icon" @click="nextImage">
                         <img src="../assets/icon-next.svg" alt="">
                     </div>
                 </div>
 
                 <div class="image-thumbnail">
-
-                    <div class="thumbnail current">
-                        <img src="../assets/image-product-1.jpg" 
-                            alt=""
-                            id="thumbnail-image">
-                    </div>
-
-                    <div class="thumbnail">
-                        <img src="../assets/image-product-1.jpg" alt=""
-                            id="thumbnail-image">
-                    </div>
-
-                    <div class="thumbnail">
-                        <img src="../assets/image-product-1.jpg" alt=""
-                            id="thumbnail-image">
-                    </div>
-
-                    <div class="thumbnail">
-                        <img src="../assets/image-product-1.jpg" alt=""
-                            id="thumbnail-image">
-                    </div>
-
+                    <ThumbnailComponent 
+                              :changeHeaderPhoto="changeSlideShowHeaderPhoto" 
+                              :images="product.images" />
                 </div>
             </div>
         </div>
@@ -153,6 +132,7 @@
     import { onMounted, ref } from 'vue'
     import { products } from '@/store/productsStore';
     import { useRoute } from 'vue-router';
+    import ThumbnailComponent from '@/components/ThumbnailComponent.vue';
 
     let itemValue = ref(1)
     const productSlideShowDiv  = ref(null)
@@ -161,26 +141,93 @@
     const product = ref('')
     const imageContainer = ref(null)
 
+
     const closeSlideShow = () => {
         productSlideShowDiv.value.classList.toggle('active')
     }
 
     const OpenSlideShow = () => {
+        changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
         productSlideShowDiv.value.classList.toggle('active')
     }
 
+    const changeContainerImage = (container,image) => {
+        container.value.style.background = `url(${image}) no-repeat center`
+        container.value.style.backgroundSize = 'cover'
+    }
+
     const changeHeaderPhoto = (index) => {
-        imageContainer.value.style.background = `url(${product.value.images[index]}) no-repeat center`
-        imageContainer.value.style.backgroundSize = 'cover'
+        currentImageIndex.value = index
+        console.log('current Image:',currentImageIndex.value)
+       
+        changeContainerImage(imageContainer,product.value.images[index])
+    }
+
+    // PRODUCT SLIDESHOW
+    const slideShowImageHeader = ref(null)
+    const currentImageIndex = ref(0)
+    const imageLength = ref(0)
+
+   
+
+    const changeSlideShowHeaderPhoto = (index) => {
+        changeContainerImage(slideShowImageHeader,product.value.images[index])
+    }
+
+    const prevImage = () =>{
+       if (currentImageIndex.value > 0) {
+            currentImageIndex.value--;
+        }
+
+        changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+    }
+
+    const nextImage = () =>{
+        if(currentImageIndex.value < imageLength.value -1){
+            currentImageIndex.value++
+        }
+
+        changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+    }
+
+    // MOBILE VIEW
+    const mobileImageContainer = ref('')
+
+    const mobilePrev = () => {
+        if (currentImageIndex.value > 0) {
+            currentImageIndex.value--;
+        }
+
+        changeContainerImage(mobileImageContainer,product.value.images[currentImageIndex.value])
+    }
+
+    const mobileNext = () => {
+        if(currentImageIndex.value < imageLength.value -1){
+            currentImageIndex.value++
+        }
+
+        changeContainerImage(mobileImageContainer,product.value.images[currentImageIndex.value])
+    }
+
+    const changeHeaderPhotoMobile = (index) => {
+        changeContainerImage(mobileImageContainer,product.value.images[index])
     }
 
     onMounted(async () => {
         await useProduct.getSingleProduct(router.params.id)
         product.value = useProduct.product
 
-        // CHANGE HEADER IMAGE
-        imageContainer.value.style.background = `url(${product.value.thumbnail}) no-repeat center`
-        imageContainer.value.style.backgroundSize = 'cover'
+        if(product.value){
+              imageLength.value = product.value.images.length
+        }
+      
+        // CHANGE HEADER IMAGE 
+        // DESKTOP
+        changeContainerImage(imageContainer,product.value.thumbnail)
+        changeContainerImage(slideShowImageHeader,product.value.thumbnail)
+
+        // MOBILE
+        changeContainerImage(mobileImageContainer,product.value.thumbnail)
     })
 </script>
   
@@ -201,7 +248,7 @@
         align-items: center;
         height: 100%;
         width: 100%;
-        /* background-color: blueviolet; */
+        /* background-color: blueviol et; */
     }
 
     .container .image-container-mobile{
@@ -391,6 +438,7 @@
         display: none;
         user-select: none;
         transition: all 0.5s ease-in;
+        z-index: 2;
     }
 
     .product-slideshow.active{
@@ -431,7 +479,7 @@
         position: relative;
     }
 
-    .product-slideshow > .main-item > .image-container > .wrapper > .prev-icon{
+    .prev-icon{
        position: absolute;
        top: 50%;
        left: -25px;
@@ -442,9 +490,11 @@
        justify-content: center;
        align-items: center;
        border-radius: 50%;
+       border: 1px solid rgba(0, 0, 0, 0.2);
+       cursor: pointer;
     }
 
-    .product-slideshow > .main-item > .image-container > .wrapper > .next-icon{
+    .next-icon{
         position: absolute;
        top: 50%;
        right: -25px;
@@ -455,6 +505,8 @@
        justify-content: center;
        align-items: center;
        border-radius: 50%;
+       border: 1px solid rgba(0, 0, 0, 0.2);
+       cursor: pointer;
     }
 
     /* .product-slideshow > .main-item > .image-container > .wrapper > .prev-icon > img{
@@ -476,12 +528,14 @@
         grid-template-columns: repeat(4,auto);
         padding: 10px 0px;
         justify-content: space-between;
+        
     }
 
     .product-slideshow > .main-item > .image-container > .image-thumbnail > .thumbnail{
         height: 85px;
         width:85px;
         border: 1px solid transparent;
+        cursor: pointer;
     }
 
     .product-slideshow > .main-item > .image-container > .image-thumbnail .thumbnail img{
@@ -489,6 +543,7 @@
        width: inherit;
        object-fit: cover;
        border-radius: 10px;
+       cursor: pointer;
     }
 
     .product-slideshow > .main-item > .image-container > .image-thumbnail .thumbnail.current{
