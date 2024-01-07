@@ -1,5 +1,5 @@
 <template>
-     <div class="cart-container" ref="cartContainer">
+     <div class="cart-container">
             <!-- cart header -->
             <div class="cart-header">
                 <h4>Cart</h4>
@@ -7,37 +7,48 @@
 
                 <!-- cart items -->
             <div class="cart-items">
+                <div class="item-container" v-for="items in cartItems" :key="items.id">
+                        <div class="items" v-for="item in items.products" :key="item.id">
+                            <div class="item-image">
+                                <img :src="item.thumbnail" alt="">
+                            </div>
 
-                <div class="items">
-                    <div class="item-image">
-                        <img src="../assets/image-product-1.jpg" alt="">
-                    </div>
+                            <div class="item-description">
+                                <p class="descriptiion">
+                                    {{ item.title }}
+                                </p>
 
-                    <div class="item-description">
-                        <p class="descriptiion">
-                            Fall Limited Edition Sneakers
-                        </p>
+                                <small class="price">
+                                    ${{ item.price }} x {{ item.quantity }} <br>
+                                    Total: <span class="price-total">${{ item.total}}</span>
+                                </small>
+                            </div>
 
-                        <small class="price">1124.00 x 3 <span class="price-total">$1375.00</span></small>
-                    </div>
-
-                        <div class="item-remove-btn">
-                        <img src="../assets/icon-delete.svg" 
-                             alt="">
-                    </div>
-
-                    </div>
-
+                            <div class="item-remove-btn" @click="deleteCartItem(items.id)">
+                                <img src="../assets/icon-delete.svg" 
+                                    alt="">
+                            </div>
+                        </div>
+                </div>
             </div>
 
             <div class="cart-checkout-btn">
-                <button class="checkout-btn">Checkout</button>
+                    <button class="checkout-btn">Checkout</button>
             </div>
         </div>
 </template>
 
 <script setup>
+    import { defineProps } from 'vue';
+    import { carts } from '@/store/cartStore'
 
+    const cart = carts()
+
+    const deleteCartItem = (id) => {
+        console.log(id)
+        cart.RemoveCartItem(id)
+    }
+    defineProps(['cartItems'])
 </script>
 
 <style scoped>
@@ -62,17 +73,29 @@
     }
 
     .cart-container .cart-items{
+        width: 100%;
+        max-height: 300px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
+
+    .cart-container .cart-items .item-container{
         border-top: 1px solid rgba(0,0,0,0.1);
         padding: 10px;
+    }
+    
+    .cart-container .cart-items::-webkit-scrollbar-thumb{
+       background-color: var(--Orange);
     }
 
 
     .cart-container .cart-items .items{
         display: grid;
-        grid-template-columns: repeat(3,auto);
+        grid-template-columns: 30% 50% 20%;
         gap: 20px;
-        justify-content: center;
-        align-items: center;
+        justify-content: space-between;
+        text-align: left;
     }
 
     .cart-container .cart-items .items{
@@ -99,9 +122,10 @@
     .cart-container .cart-checkout-btn {
         width: 100%;
         height: 100%;
-        padding: 20px;
+        padding: 10px 0px;
         display: flex;
         justify-content: center;
+        padding: 10px;
     }
 
     .cart-container .cart-checkout-btn button.checkout-btn{

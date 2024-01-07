@@ -1,11 +1,11 @@
 <template>
     <div class="image-thumbnail">
 
-        <div class="thumbnail" v-for="(image,index) in images" :key="image">
+        <div class="thumbnail" v-for="(image,index) in images" :key="image" :ref="reference">
+            <span class="overlay"></span>
             <img :src="image" 
                 alt=""
                 id="thumbnail-image"
-                ref="`image${index + 1}`"
                 @click="changeHeaderPhoto(index)"
                 draggable="false">
         </div>
@@ -17,7 +17,17 @@
     import { defineProps } from 'vue';
 
   
-    defineProps(['changeHeaderPhoto','images'])
+    defineProps({
+      'changeHeaderPhoto':{
+        type:Function
+      },
+      'images':{
+        type:Object
+      },
+      'reference':{
+        type:Function
+      }
+    })
 </script>
 
 <style scoped>
@@ -31,58 +41,35 @@
     .thumbnail{
         height: 85px;
         width:85px;
-        border: 1px solid transparent;
     }
 
     .image-thumbnail .thumbnail img{
        height: inherit;
        width: inherit;
-       object-fit: cover;
-       border-radius: 10px;
-    }
-
-     .image-thumbnail .thumbnail.current{
-        border-color:var(--Orange);
-        border-radius: 10px;
-    }
-
-    .image-thumbnail .thumbnail.current img{
-        opacity: 0.5;
-    }
-
-    .image-thumbnail{
-        width: 450px;
-        display: grid;
-        grid-template-columns: repeat(4,auto);
-        padding: 10px 0px;
-        justify-content: space-between;
-        
-    }
-
-    .image-thumbnail > .thumbnail{
-        height: 85px;
-        width:85px;
-        border: 1px solid transparent;
-        cursor: pointer;
-    }
-
-    .image-thumbnail .thumbnail img{
-       height: inherit;
-       width: inherit;
-       object-fit: cover;
+       object-fit: fill;
        border-radius: 10px;
        cursor: pointer;
     }
 
-    .image-thumbnail .thumbnail.current{
+     .image-thumbnail .thumbnail.current{
         border-color:var(--Orange);
-        border-radius: 10px;
+        position: relative;
     }
 
-    .image-thumbnail .thumbnail.current img{
-       opacity: 1;
+     .image-thumbnail .thumbnail.current .overlay{
+       position: absolute;
+       width: 100%;
+       height: 100%;
+       top: 0;
+       right: 0;
+       bottom: 0;
+       background-color: rgba(255, 255, 255,0.5);
+       z-index: 2;
+       border: 2px solid rgba(247, 165, 13, 1);
+       border-radius: 10px;
     }
 
+    
     @media (width <= 768px){
         .image-thumbnail{
             width: 100%;

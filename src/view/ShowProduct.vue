@@ -11,7 +11,8 @@
             <div class="image-thumbnail">
                 
                 <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhoto" 
-                                    :images="product.images" />
+                                    :images="product.images"
+                                    :reference="image => Images.push(image)" />
 
             </div>
         </div>
@@ -32,7 +33,9 @@
                 
             </div>
 
-            <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhotoMobile" :images="product.images" />
+            <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhotoMobile" 
+                                :images="product.images" 
+                                :reference="image => MobileImage.push(image)"/>
         </div>
 
         <div class="item-description-container">
@@ -66,7 +69,7 @@
            <div class="btn-container">
                 <div class="range-btn">
 
-                    <div class="minus-btn" @click="itemValue<=1 ? itemValue : itemValue--">
+                    <div class="minus-btn" @click="decrementValue">
                         <img src="../assets/icon-minus.svg" 
                              alt="">
                     </div>
@@ -76,7 +79,7 @@
                     </div>
 
                     <div class="plus-btn" 
-                         @click="itemValue<=product.stock ? itemValue++ : product.stock">
+                         @click="incrementValue">
                         <img src="../assets/icon-plus.svg" 
                              alt="">
                     </div>
@@ -85,7 +88,7 @@
                 </div>
 
                 <div class="addToCart-btn">
-                    <button class="btn-add-cart">
+                    <button class="btn-add-cart" @click="addToCart">
                         <img src="../assets/cart-white.svg" alt="" class="btn-icon">
                         Add to cart
                     </button>
@@ -121,7 +124,8 @@
                 <div class="image-thumbnail">
                     <ThumbnailComponent 
                               :changeHeaderPhoto="changeSlideShowHeaderPhoto" 
-                              :images="product.images" />
+                              :images="product.images" 
+                              :reference="image => SlideShowImages.push(image)"/>
                 </div>
             </div>
         </div>
@@ -129,18 +133,33 @@
 </template>
   
 <script setup>
-    import { onMounted, ref } from 'vue'
+    import { nextTick, onMounted, ref } from 'vue'
     import { products } from '@/store/productsStore';
     import { useRoute } from 'vue-router';
     import ThumbnailComponent from '@/components/ThumbnailComponent.vue';
+    import { carts } from '@/store/cartStore'
 
-    let itemValue = ref(1)
-    const productSlideShowDiv  = ref(null)
+    
     const router = useRoute()
     const useProduct = products()
+    let itemValue = ref(1)
+    const productSlideShowDiv  = ref(null)
     const product = ref('')
     const imageContainer = ref(null)
+    const Images = ref([])
+    const LastImageIndex = ref(0)
+    const SlideShowImages = ref([])
 
+    // RANGE BTN FUNCTION
+    const incrementValue = () => {
+        itemValue.value++
+    }
+
+    const decrementValue = () => {
+        if(itemValue.value > 1){
+            itemValue.value--
+        }
+    }
 
     const closeSlideShow = () => {
         productSlideShowDiv.value.classList.toggle('active')
@@ -156,22 +175,32 @@
         container.value.style.backgroundSize = 'cover'
     }
 
-    const changeHeaderPhoto = (index) => {
+    const changeHeaderPhoto = async (index) => {
         currentImageIndex.value = index
-        console.log('current Image:',currentImageIndex.value)
-       
+
+        await nextTick()
+
+        Images.value[LastImageIndex.value].classList.remove('current')
+        Images.value[index].classList.add('current')
         changeContainerImage(imageContainer,product.value.images[index])
+
+        LastImageIndex.value = index
     }
 
     // PRODUCT SLIDESHOW
     const slideShowImageHeader = ref(null)
     const currentImageIndex = ref(0)
     const imageLength = ref(0)
-
    
 
-    const changeSlideShowHeaderPhoto = (index) => {
+    const changeSlideShowHeaderPhoto = async (index) => {
+        await nextTick()
+
+        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
+        SlideShowImages.value[index].classList.add('current')
         changeContainerImage(slideShowImageHeader,product.value.images[index])
+        
+        LastImageIndex.value = index
     }
 
     const prevImage = () =>{
@@ -179,26 +208,37 @@
             currentImageIndex.value--;
         }
 
+        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
+        SlideShowImages.value[currentImageIndex.value].classList.add('current')
         changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+
+        LastImageIndex.value = currentImageIndex.value
     }
 
     const nextImage = () =>{
         if(currentImageIndex.value < imageLength.value -1){
             currentImageIndex.value++
         }
-
+        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
+        SlideShowImages.value[currentImageIndex.value].classList.add('current')
         changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+
+        LastImageIndex.value = currentImageIndex.value
     }
 
     // MOBILE VIEW
     const mobileImageContainer = ref('')
+    const MobileImage = ref([])
 
     const mobilePrev = () => {
         if (currentImageIndex.value > 0) {
             currentImageIndex.value--;
         }
 
+        MobileImage.value[LastImageIndex.value].classList.remove('current')
+        MobileImage.value[currentImageIndex.value].classList.add('current')
         changeContainerImage(mobileImageContainer,product.value.images[currentImageIndex.value])
+        LastImageIndex.value = currentImageIndex.value
     }
 
     const mobileNext = () => {
@@ -206,15 +246,48 @@
             currentImageIndex.value++
         }
 
+        MobileImage.value[LastImageIndex.value].classList.remove('current')
+        MobileImage.value[currentImageIndex.value].classList.add('current')
+
         changeContainerImage(mobileImageContainer,product.value.images[currentImageIndex.value])
+
+        LastImageIndex.value = currentImageIndex.value
     }
 
-    const changeHeaderPhotoMobile = (index) => {
+    const changeHeaderPhotoMobile = async (index) => {
+        currentImageIndex.value = index
+        await nextTick()
+
+        MobileImage.value[LastImageIndex.value].classList.remove('current')
+        MobileImage.value[index].classList.add('current')
+
         changeContainerImage(mobileImageContainer,product.value.images[index])
+
+        LastImageIndex.value = currentImageIndex.value
     }
+
+    // CART
+    const useCart = carts()
+    
+    const addToCart = async () => {
+        const formData = ref({
+            merge: true,
+            userId:1,
+            products: [
+                {
+                    id:router.params.id,
+                    quantity: itemValue.value,
+                }
+            ]
+        })
+
+        await useCart.addToCart(formData.value)
+    }
+
 
     onMounted(async () => {
         await useProduct.getSingleProduct(router.params.id)
+        
         product.value = useProduct.product
 
         if(product.value){
@@ -228,6 +301,12 @@
 
         // MOBILE
         changeContainerImage(mobileImageContainer,product.value.thumbnail)
+
+        await nextTick()
+
+        Images.value[0].classList.add('current')
+        MobileImage.value[0].classList.add('current')
+        SlideShowImages.value[0].classList.add('current')
     })
 </script>
   

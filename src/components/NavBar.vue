@@ -22,7 +22,9 @@
         <div class="profile">
             <div class="cart" @click="toggleCart">
                 <!-- cart length -->
-                <span class="cart-items-length">3</span>
+                <span class="cart-items-length">
+                    {{ cartQuantity == 0 ? '' : cartQuantity }}
+                </span>
 
                 <!-- cart icon -->
                 <img src="../assets/icon-cart.svg" 
@@ -30,48 +32,13 @@
                      >
             </div>
 
-            <div class="profile-img">
+        <div class="profile-img">
                 <img src="../assets/image-avatar.png" 
                      alt="">
             </div>
 
-            <div class="cart-container" ref="cartContainer">
-                <!-- cart header -->
-                <div class="cart-header">
-                    <h4>Cart</h4>
-                </div>
-
-                <!-- cart items -->
-                <div class="cart-items">
-
-                    <div class="items">
-                        <div class="item-image">
-                            <img src="../assets/image-product-1.jpg" alt="">
-                        </div>
-
-                        <div class="item-description">
-                            <p class="descriptiion">
-                                Fall Limited Edition Sneakers
-                            </p>
-
-                            <small class="price">1124.00 x 3 <span class="price-total">$1375.00</span></small>
-                        </div>
-
-                        <div class="item-remove-btn">
-                            <img src="../assets/icon-delete.svg" 
-                                 alt="">
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="cart-checkout-btn">
-                    <button class="checkout-btn">Checkout</button>
-                </div>
-
-                
-            </div>
+            <!-- CART CONTAINER -->
+            <Cart :cartItems="useCart.cartItems" ref="cartContainer" />
         </div>
 
 
@@ -101,6 +68,8 @@
 <script setup>
     import { ref,onMounted } from 'vue';
     import { products } from '@/store/productsStore';
+    import Cart from './Cart.vue';
+    import { carts } from '@/store/cartStore'
 
     const useProduct = products()
     const cartContainer = ref(null)
@@ -112,7 +81,7 @@
     }
 
     const toggleCart = () => {
-        classToggler(cartContainer,'active')
+        cartContainer.value.$el.classList.toggle('active')
     }
 
     const CloseSideMenu = () => {
@@ -123,6 +92,9 @@
         classToggler(sideMenuContainer,'active')
     }
 
+    // CART
+    const useCart = carts()
+    const cartQuantity = useCart.cartQuantity
     onMounted(async () => {
         await useProduct.getCategories()
         productCategory.value = useProduct.productCategory
