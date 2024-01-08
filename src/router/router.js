@@ -10,6 +10,11 @@ const routes = [
     path: '/product/:id',
     name:'ShowProduct',
     component: () => import('../view/ShowProduct')
+  },
+  {
+    path: '/product/:category',
+    name:'ShowProductCategories',
+    component: () => import('../view/ShowSingleCategories')
   }
 ]
 

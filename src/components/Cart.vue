@@ -6,8 +6,8 @@
             </div>
 
                 <!-- cart items -->
-            <div class="cart-items">
-                <div class="item-container" v-for="items in cartItems" :key="items.id">
+            <div class="cart-items" v-if="cartItems.length > 0">
+                <div class="item-container" v-for="(items,index) in cartItems" :key="items.id">
                         <div class="items" v-for="item in items.products" :key="item.id">
                             <div class="item-image">
                                 <img :src="item.thumbnail" alt="">
@@ -19,36 +19,56 @@
                                 </p>
 
                                 <small class="price">
-                                    ${{ item.price }} x {{ item.quantity }} <br>
-                                    Total: <span class="price-total">${{ item.total}}</span>
+                                    ${{ Number(item.price).toLocaleString()  }} x {{ item.quantity }} <br>
+                                    Total: <span class="price-total">${{ Number(item.total).toLocaleString() }}</span>
                                 </small>
                             </div>
 
-                            <div class="item-remove-btn" @click="deleteCartItem(items.id)">
+                            <div class="item-remove-btn" @click="deleteCartItem(index)">
                                 <img src="../assets/icon-delete.svg" 
                                     alt="">
                             </div>
                         </div>
                 </div>
+
+                <div class="checkout-details">
+                    <div class="overAllTotal">
+
+                        <div class="left">
+                            <h4>Order Total:</h4>
+                        </div>
+
+                        <div class="left">
+                            <h4>${{ Number(orderTotal).toLocaleString() }}</h4>
+                        </div>
+                    </div>
+                    <div class="cart-checkout-btn">
+                        <button class="checkout-btn">Checkout</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="cart-checkout-btn">
-                    <button class="checkout-btn">Checkout</button>
+            <div class="empty-cart" v-else>
+                <h2>Your Cart is Empty</h2>
             </div>
         </div>
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
+    import { computed, defineProps } from 'vue';
     import { carts } from '@/store/cartStore'
 
     const cart = carts()
 
     const deleteCartItem = (id) => {
-        console.log(id)
         cart.RemoveCartItem(id)
     }
-    defineProps(['cartItems'])
+    
+    const orderTotal = computed(() => cart.sumOrderTotal)
+    
+    defineProps({
+        'cartItems' : Array
+    })
 </script>
 
 <style scoped>
@@ -61,6 +81,7 @@
         width: 350px;
         color: var(--Dark-grayish-blue);
         display: none;
+        z-index: 100;
     }
 
     .cart-container.active{
@@ -126,6 +147,13 @@
         display: flex;
         justify-content: center;
         padding: 10px;
+        cursor: pointer;
+    }
+
+    .checkout-details .overAllTotal{
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
     }
 
     .cart-container .cart-checkout-btn button.checkout-btn{
@@ -137,5 +165,19 @@
         background-color: var(--Orange);
         color:var(--White);
         font-weight: bold;
+        cursor: pointer;
+    }
+
+    .item-remove-btn img{
+        cursor: pointer;
+    }
+
+    .empty-cart{
+        width: 100%;
+        padding: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
     }
 </style>

@@ -10,7 +10,7 @@
 
             <div class="image-thumbnail">
                 
-                <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhoto" 
+                <Thumbnail :changeHeaderPhoto="changeHeaderPhoto" 
                                     :images="product.images"
                                     :reference="image => Images.push(image)" />
 
@@ -33,7 +33,7 @@
                 
             </div>
 
-            <ThumbnailComponent :changeHeaderPhoto="changeHeaderPhotoMobile" 
+            <Thumbnail :changeHeaderPhoto="changeHeaderPhotoMobile" 
                                 :images="product.images" 
                                 :reference="image => MobileImage.push(image)"/>
         </div>
@@ -67,25 +67,9 @@
            
 
            <div class="btn-container">
-                <div class="range-btn">
-
-                    <div class="minus-btn" @click="decrementValue">
-                        <img src="../assets/icon-minus.svg" 
-                             alt="">
-                    </div>
-
-                    <div class="item-value">
-                        {{ itemValue }}
-                    </div>
-
-                    <div class="plus-btn" 
-                         @click="incrementValue">
-                        <img src="../assets/icon-plus.svg" 
-                             alt="">
-                    </div>
-
-                    
-                </div>
+                <RangeBtn :itemValue="itemValue" 
+                          @decrementValue="decrementValue" 
+                          @incrementValue="incrementValue"/>
 
                 <div class="addToCart-btn">
                     <button class="btn-add-cart" @click="addToCart">
@@ -122,7 +106,7 @@
                 </div>
 
                 <div class="image-thumbnail">
-                    <ThumbnailComponent 
+                    <Thumbnail 
                               :changeHeaderPhoto="changeSlideShowHeaderPhoto" 
                               :images="product.images" 
                               :reference="image => SlideShowImages.push(image)"/>
@@ -133,11 +117,12 @@
 </template>
   
 <script setup>
-    import { nextTick, onMounted, ref } from 'vue'
+    import { nextTick, onMounted, ref ,computed } from 'vue'
     import { products } from '@/store/productsStore';
     import { useRoute } from 'vue-router';
-    import ThumbnailComponent from '@/components/ThumbnailComponent.vue';
+    import Thumbnail from '@/components/Thumbnail.vue';
     import { carts } from '@/store/cartStore'
+    import RangeBtn from '@/components/RangeBtn.vue';
 
     
     const router = useRoute()
@@ -175,14 +160,21 @@
         container.value.style.backgroundSize = 'cover'
     }
 
+    const changeThumbnailPhoto = (container) => {
+        container.value[LastImageIndex.value].classList.remove('current')
+        container.value[currentImageIndex.value].classList.add('current')
+    }
+
     const changeHeaderPhoto = async (index) => {
         currentImageIndex.value = index
 
         await nextTick()
 
-        Images.value[LastImageIndex.value].classList.remove('current')
-        Images.value[index].classList.add('current')
+
+        changeThumbnailPhoto(Images)
+        changeThumbnailPhoto(SlideShowImages)
         changeContainerImage(imageContainer,product.value.images[index])
+        changeContainerImage(slideShowImageHeader,product.value.images[index])
 
         LastImageIndex.value = index
     }
@@ -196,10 +188,11 @@
     const changeSlideShowHeaderPhoto = async (index) => {
         await nextTick()
 
-        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
-        SlideShowImages.value[index].classList.add('current')
+        changeThumbnailPhoto(Images)
+        changeThumbnailPhoto(SlideShowImages)
         changeContainerImage(slideShowImageHeader,product.value.images[index])
-        
+        changeContainerImage(imageContainer,product.value.images[index])
+
         LastImageIndex.value = index
     }
 
@@ -208,9 +201,10 @@
             currentImageIndex.value--;
         }
 
-        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
-        SlideShowImages.value[currentImageIndex.value].classList.add('current')
+        changeThumbnailPhoto(Images)
+        changeThumbnailPhoto(SlideShowImages)
         changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+        changeContainerImage(imageContainer,product.value.images[currentImageIndex.value])
 
         LastImageIndex.value = currentImageIndex.value
     }
@@ -219,9 +213,11 @@
         if(currentImageIndex.value < imageLength.value -1){
             currentImageIndex.value++
         }
-        SlideShowImages.value[LastImageIndex.value].classList.remove('current')
-        SlideShowImages.value[currentImageIndex.value].classList.add('current')
+
+        changeThumbnailPhoto(Images)
+        changeThumbnailPhoto(SlideShowImages)
         changeContainerImage(slideShowImageHeader,product.value.images[currentImageIndex.value])
+        changeContainerImage(imageContainer,product.value.images[currentImageIndex.value])
 
         LastImageIndex.value = currentImageIndex.value
     }
@@ -270,6 +266,9 @@
     const useCart = carts()
     
     const addToCart = async () => {
+        const cartItemsIdArray = computed(() => useCart.cartItemsIdArray)
+        const isAlreadyOnCart = cartItemsIdArray.value.some(item => item === router.params.id)
+
         const formData = ref({
             merge: true,
             userId:1,
@@ -281,7 +280,12 @@
             ]
         })
 
-        await useCart.addToCart(formData.value)
+        if(!isAlreadyOnCart){
+            await useCart.addToCart(formData.value)
+            cartItemsIdArray.value.push(router.params.id)
+        }else{
+            useCart.cartAlreadyAdded = true
+        }
     }
 
 
@@ -306,6 +310,7 @@
 
         Images.value[0].classList.add('current')
         MobileImage.value[0].classList.add('current')
+
         SlideShowImages.value[0].classList.add('current')
     })
 </script>
@@ -441,43 +446,13 @@
         column-gap: 20px;
     }
 
-    .btn-container .range-btn{
-        width: 100%;
-        height: 100%;
-        background-color: var(--Light-grayish-blue);
-        display: grid;
-        grid-template-columns: 5px 15px 5px;
-        gap:10px;
-        align-items: center;
-        justify-content: space-around;
-        user-select: none;
-        border-radius: 10px;
-    }
-
-    .btn-container .range-btn .minus-btn{
-        cursor: pointer;
-        position: relative;
-        top: -3px;
-    }
-
-    .btn-container .range-btn .minus-btn:active,
-    .btn-container .range-btn .plus-btn:active{
-       scale: 0.8;
-    }
- 
    
-    .btn-container .range-btn .item-value{
-        padding: 0px 10px;
-    }
-
-    .btn-container .range-btn .plus-btn{
-        cursor: pointer;
-    }
 
     /* ADD TO CART BTN */
     .btn-container .addToCart-btn{
         width: 100%;
         height: 100%;
+        cursor: pointer;
     }
 
     .btn-container .addToCart-btn .btn-icon{

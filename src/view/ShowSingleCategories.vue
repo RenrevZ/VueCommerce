@@ -10,7 +10,7 @@
         </div>
 
         <!-- MAIN PRODUCT -->
-        <Product  :productItem="productItem"/>
+        <Product :productItem="productItem"/>
     </div>
 </template>
 

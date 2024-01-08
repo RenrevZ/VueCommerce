@@ -1,11 +1,13 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const products = defineStore('products',{
     state: () => ({
         productItems : null,
         productCategory: null,
-        product:[]
+        product:[],
+        productSingleCategory:ref([])
     }),
     getters: {
 
@@ -29,6 +31,12 @@ export const products = defineStore('products',{
                     .get('https://dummyjson.com/products/categories')
                     .then(response => this.productCategory = response.data)
                     .catch(error => console.error(error))
+        },
+        async getSingleCategories(category){
+            await axios
+                .get(`https://dummyjson.com/products/category/${category}`)
+                .then(response => this.productSingleCategory = response.data)
+                .catch(error => console.error(error))
         }
     }
 })

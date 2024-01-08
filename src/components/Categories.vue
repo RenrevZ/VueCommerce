@@ -25,7 +25,9 @@
             <!-- CATEGORY LIST -->
             <ul  ref="categoriesContainer">
                 <li v-for="category in productCategory" :key="category">
-                    {{  category }}
+                    <router-link :to="{name:'ShowProductCategories',params:{category:category}}">
+                        {{  category }}
+                    </router-link>
                 </li>
             </ul>
         </div>
@@ -111,7 +113,7 @@
         width: 12px;
     }
 
-     .main-navigation-item ul li{
+     .main-navigation-item ul li a{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -122,6 +124,8 @@
         min-width: 200px;
         border: 1px solid rgba(12,236,169,0.329);
         background-color: var(--White);
+        text-decoration: none;
+        color: var(--Dark-grayish-blue);
     }
 
     .main-navigation-item ul li:hover{

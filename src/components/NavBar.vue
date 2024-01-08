@@ -8,10 +8,10 @@
                      @click="OpenSideMenu">
             </div>
 
-            <div class="icon-desktop">
+            <router-link :to="{name:'LandingPage'}" class="icon-desktop">
                 <img src="../assets/vue-logo.jpg" 
                      alt="">
-            </div>
+            </router-link >
 
             <div class="icon-mobile">
                 <img src="../assets/logo.png" 
@@ -29,12 +29,13 @@
                 <!-- cart icon -->
                 <img src="../assets/icon-cart.svg" 
                      alt=""
-                     >
+                     draggable="false">
             </div>
 
         <div class="profile-img">
                 <img src="../assets/image-avatar.png" 
-                     alt="">
+                     alt=""
+                     draggable="false">
             </div>
 
             <!-- CART CONTAINER -->
@@ -66,7 +67,7 @@
 </template>
   
 <script setup>
-    import { ref,onMounted } from 'vue';
+    import { ref,onMounted,computed } from 'vue';
     import { products } from '@/store/productsStore';
     import Cart from './Cart.vue';
     import { carts } from '@/store/cartStore'
@@ -94,7 +95,8 @@
 
     // CART
     const useCart = carts()
-    const cartQuantity = useCart.cartQuantity
+    const cartQuantity = computed(() => useCart.cartQuantity)
+
     onMounted(async () => {
         await useProduct.getCategories()
         productCategory.value = useProduct.productCategory
@@ -184,6 +186,10 @@
         cursor: pointer;
         position: relative;
     }
+
+    .profile .cart img{
+        user-select: none;
+    }
   
     .profile .cart .cart-items-length{
         position: absolute;
@@ -199,7 +205,6 @@
         /* height: 10px;
         width: 15px; */
     }
-    
     
     .cart-container{
         position: absolute;

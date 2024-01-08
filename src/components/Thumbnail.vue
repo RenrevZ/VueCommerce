@@ -7,7 +7,8 @@
                 alt=""
                 id="thumbnail-image"
                 @click="changeHeaderPhoto(index)"
-                draggable="false">
+                draggable="false"
+                >
         </div>
 
     </div>
@@ -36,6 +37,7 @@
         display: flex;
         padding: 10px 0px;
         justify-content: space-evenly;
+        gap: 10px;
     }
 
     .thumbnail{
@@ -49,6 +51,8 @@
        object-fit: fill;
        border-radius: 10px;
        cursor: pointer;
+       user-select: none;
+       z-index: -1;
     }
 
      .image-thumbnail .thumbnail.current{
@@ -64,7 +68,7 @@
        right: 0;
        bottom: 0;
        background-color: rgba(255, 255, 255,0.5);
-       z-index: 2;
+       z-index: 1;
        border: 2px solid rgba(247, 165, 13, 1);
        border-radius: 10px;
     }

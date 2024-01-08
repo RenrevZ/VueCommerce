@@ -1,13 +1,27 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const carts = defineStore('carts',{
     state: () => ({
-      cartItems:[],
-      cartQuantity:0
-    }),
+      cartItems:ref([]),
+      cartQuantity:ref(0),
+      cartadded:ref(false),
+      cartAlreadyAdded:ref(false),
+      OrderTotal:ref(0),
+      cartItemsIdArray:ref([])
+    }), 
     getters: {
-
+        sumOrderTotal(state){
+            const orderTotalArray = state.cartItems.flatMap(item =>
+                item.products.map(price => price.total)
+              );
+          
+              // Sum the order total array
+              const sumTotal = orderTotalArray.reduce((sum, total) => sum + total, 0);
+          
+              return sumTotal;
+        }
     },
     actions: {
         async addToCart(formData){
@@ -16,16 +30,15 @@ export const carts = defineStore('carts',{
                              formData,
                       {'Content-Type': 'application/json' })
                      .then(response => {
-                        console.log(response.data)
                         this.cartItems.push(response.data)
+                        this.cartadded = true
                      })
                      .catch(error => console.error(error.message))
                      .finally(() => this.cartQuantity++)
         },
-        RemoveCartItem(index){
-            console.log('Removing item at index:', index);
+        async RemoveCartItem(index){
             this.cartItems = this.cartItems.filter((_, i) => i !== index);
-            console.log('Updated cartItems:', this.cartItems);
+            this.cartQuantity--
         }
     }
 })
