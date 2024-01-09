@@ -6,7 +6,7 @@
 
         <div class="main-products-header">
                 <span class="header-background"></span>
-                <h4>All Products</h4>
+                <h4>{{ currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1)}}</h4>
         </div>
 
         <!-- MAIN PRODUCT -->
@@ -16,17 +16,28 @@
 
 <script setup>
     import { products } from '@/store/productsStore';
-    import {ref,onMounted} from 'vue'
+    import {ref,onMounted, computed } from 'vue'
     import Product from '@/components/Product';
     import Categories from '@/components/Categories'
+    import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 
+    const route = useRoute()
+    const currentCategory = ref(route.params.category)
     const useProduct = products()
     const productItem = ref([])
     const productCategory = ref(null)
+    const product = computed(() => useProduct.productSingleCategory)
 
-    onMounted( async () =>  { 
-        await useProduct.getProducts()
-        productItem.value = useProduct.productItems
+    onBeforeRouteUpdate(async (to) => {
+        currentCategory.value = to.params.category
+        await useProduct.getSingleCategories(currentCategory.value)
+        productItem.value = product.value
+    })
+
+    onMounted( async () =>  {
+        await useProduct.getSingleCategories(currentCategory.value)
+        productItem.value = product.value
+        console.log('current product:',productItem.value)
         await useProduct.getCategories()
         productCategory.value = useProduct.productCategory
     })

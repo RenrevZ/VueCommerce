@@ -2,17 +2,16 @@
     <div class="container" v-if="isTrue || isAlreadyAdded">
         <div class="alert">
             <div class="left" v-if="isAlreadyAdded">
-                item already on cart
+                item is already on your cart
             </div>
 
             <div class="left" v-else>
                 added to your cart  successfully
             </div>
-            
-            <div class="right">
-                <img src="../assets/icon-close.svg" alt="">
-            </div>
         </div>
+    </div>
+    <div class="container">
+        
     </div>
 </template>
 <script setup>
@@ -26,28 +25,25 @@
 </script>
 <style scoped>
     .container{
-        width: 350px;
-        position: absolute;
+        width:300px;
+        /* position: absolute;
         right: 30px;
-        top: 100px;
+        top: 100px; */
         animation: slide 0.3s ease;
         z-index: 10000;
+        margin-bottom: 10px;
     }
 
     .alert{
         width: 100%;
-        background-color: #2eb886;
+        background-color: #fdf2f2;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         padding: 10px;
-        color:var(--White);
-        font-weight: 700;
-    }
-
-    .alert .right{
-        align-self: center;
-        height: 14px;
+        color:var(--Orange);
+        border-radius: 10px;
+        font-weight: 500;
     }
 
     @keyframes slide {

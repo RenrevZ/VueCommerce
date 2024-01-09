@@ -56,7 +56,9 @@
                 <div class="link-items">
                     <ul>
                         <li v-for="category in productCategory" :key="category">
+                            <router-link :to="{name:'ShowProductCategories',params:{category:category}}">
                             {{  category }}
+                            </router-link>
                         </li>
                     </ul>
                 </div>
@@ -323,7 +325,7 @@
             grid-template-rows: 70px;
             padding: 0px 10px;
             gap: 10px;
-            width: 50%;
+            width: 70%;
             background-color: var(--White);
             position: fixed;
             top: 0;
@@ -339,6 +341,7 @@
             top: 0;
             display: flex;
             align-items: center;
+            z-index: 30;
             height: 100%;
             width: 100%;
             padding: 0px 10px;
@@ -353,6 +356,22 @@
 
         .side-menu .main-menu ul{
           font-weight: 700;
+        }
+
+        .side-menu .main-menu ul li a{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            /* border-radius: 10px; */
+            box-shadow: 8px 5px 1px rgba(12,236,169,0.329);
+            height: 30px;
+            border: 1px solid rgba(12,236,169,0.329);
+            background-color: var(--White);
+            text-decoration: none;
+            color: var(--Dark-grayish-blue);
+            position: relative;
         }
     }
 

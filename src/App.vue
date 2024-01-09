@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <AlertMessage  :isTrue="isAdded" :isAlreadyAdded="isAlreadyAdded"/>
     <NavBar />
     
     <router-view></router-view>
@@ -9,23 +8,7 @@
 
 <script setup>
   import NavBar from './components/NavBar';
-  import AlertMessage from './components/AlertMessage';
-  import { carts } from './store/cartStore';
-  import { computed, watch } from 'vue';
 
-  const useCart = carts()
-  let isAdded = computed(() => useCart.cartadded)
-  let isAlreadyAdded = computed(() => useCart.cartAlreadyAdded)
-
-  watch(isAdded,() => setTimeout(() => {
-      console.log('watched')
-      useCart.cartadded = false
-  },3000))
-
-  watch(isAlreadyAdded,() => setTimeout(() => {
-      console.log('watched')
-      useCart.cartAlreadyAdded = false
-  },3000))
 </script>
 
 <style>

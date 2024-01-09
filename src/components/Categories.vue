@@ -41,11 +41,11 @@
     const categoriesContainer = ref(null)
 
     const scrollLeft = () => {
-        categoriesContainer.value.scrollLeft+=(-1000)
+        categoriesContainer.value.scrollLeft+=(-200)
     }
 
     const scrollRight = () => {
-        categoriesContainer.value.scrollLeft+=1000
+        categoriesContainer.value.scrollLeft+=200
     }
 </script>
 
@@ -126,15 +126,16 @@
         background-color: var(--White);
         text-decoration: none;
         color: var(--Dark-grayish-blue);
+        position: relative;
     }
 
-    .main-navigation-item ul li:hover{
-        scale: 1.2;
-        z-index: 2;
+    .main-navigation-item ul li a:hover{
         transition: 0.3s;
-        box-shadow: 4px 4px 10px var(--Pale-orange);
         cursor: pointer;
-        margin: 0px 15px;
+        top: -3px;
+        left: -10px;
+        margin: 0px 5px;
+        box-shadow: 13px 10px 1px rgba(12,236,169,0.329);
     }
 
     @keyframes slide {

@@ -1,8 +1,11 @@
 <template>
     <div class="main-products">
-
-        <div v-for="product in productItem" :key="product.id">
+        <div class="product-container" v-for="product in productItem" :key="product">
             <router-link :to="{name:'ShowProduct',params: { id:product.id }}" class="product">
+                <div class="lowest-guarantee" v-if="product.price <= 100">
+                    <p>lowest price</p>
+                </div>
+
                     <div class="image">
                         <img :src="product.thumbnail" alt="">
                     </div>
@@ -69,12 +72,15 @@
         flex-direction: column;
         gap: 10px;
         background-color: var(--White);
+        position:relative;
+        transition: 0.3s;
     }
 
-    .container .product:hover{
+    .main-products .product:hover{
         /* scale: 1.1; */
-        transition: 0.3s;
+        transition: all 0.3s;
         box-shadow: 20px 8px 1px rgba(12, 236, 169, 0.329);
+        left: -10px;
     }
 
     .main-products .product .image{
@@ -126,6 +132,26 @@
     .star-symbol{
         color: rgb(218, 221, 12);
         font-size: 18px;
+    }
+
+    .product-container{
+        position: relative;
+    }
+
+    .lowest-guarantee{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 100px;
+        background-color: rgba(245, 52, 52, 0.7);
+        color: var(--White);
+        font-weight: 700;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 30px;
+        text-transform: uppercase;
     }
 
     @media(width <= 768px){

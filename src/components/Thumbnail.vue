@@ -81,7 +81,20 @@
         }
     }
 
+    @media (width <= 768px){
+         .image-thumbnail{
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4,auto);
+        }
+    }
+
     @media (width <= 320px){
+        .image-thumbnail{
+            width: 100%;
+            grid-template-columns: repeat(3,auto);
+        }
+
         .thumbnail{
             height: 70px;
             width:70px;

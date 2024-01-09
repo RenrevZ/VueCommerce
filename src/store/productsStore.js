@@ -15,7 +15,7 @@ export const products = defineStore('products',{
     actions: {
         async getProducts(){
                await axios
-                     .get('https://dummyjson.com/products')
+                     .get('https://dummyjson.com/products?limit=100')
                      .then(response => this.productItems = response.data.products)
                      .catch(error => console.error(error))
         },
@@ -35,7 +35,7 @@ export const products = defineStore('products',{
         async getSingleCategories(category){
             await axios
                 .get(`https://dummyjson.com/products/category/${category}`)
-                .then(response => this.productSingleCategory = response.data)
+                .then(response => this.productSingleCategory = response.data.products)
                 .catch(error => console.error(error))
         }
     }

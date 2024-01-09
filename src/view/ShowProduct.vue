@@ -65,18 +65,20 @@
                 </div>
            </div>   
            
-
            <div class="btn-container">
-                <RangeBtn :itemValue="itemValue" 
-                          @decrementValue="decrementValue" 
-                          @incrementValue="incrementValue"/>
+                <AlertMessage  :isTrue="isAdded" :isAlreadyAdded="isAlreadyAdded"/>
+              <div class="cart-column">
+                    <RangeBtn :itemValue="itemValue" 
+                            @decrementValue="decrementValue" 
+                            @incrementValue="incrementValue"/>
 
-                <div class="addToCart-btn">
-                    <button class="btn-add-cart" @click="addToCart">
-                        <img src="../assets/cart-white.svg" alt="" class="btn-icon">
-                        Add to cart
-                    </button>
-                </div>
+                    <div class="addToCart-btn">
+                        <button class="btn-add-cart" @click="addToCart">
+                            <img src="../assets/cart-white.svg" alt="" class="btn-icon">
+                            Add to cart
+                        </button>
+                    </div>
+               </div>
            </div>
            
         </div>
@@ -117,12 +119,13 @@
 </template>
   
 <script setup>
-    import { nextTick, onMounted, ref ,computed } from 'vue'
+    import { nextTick, onMounted, ref ,computed,watch } from 'vue'
     import { products } from '@/store/productsStore';
     import { useRoute } from 'vue-router';
     import Thumbnail from '@/components/Thumbnail.vue';
     import { carts } from '@/store/cartStore'
     import RangeBtn from '@/components/RangeBtn.vue';
+    import AlertMessage from '@/components/AlertMessage';
 
     
     const router = useRoute()
@@ -264,6 +267,8 @@
 
     // CART
     const useCart = carts()
+    let isAdded = computed(() => useCart.cartadded)
+    let isAlreadyAdded = computed(() => useCart.cartAlreadyAdded)
     
     const addToCart = async () => {
         const cartItemsIdArray = computed(() => useCart.cartItemsIdArray)
@@ -287,6 +292,16 @@
             useCart.cartAlreadyAdded = true
         }
     }
+
+    watch(isAdded,() => setTimeout(() => {
+        console.log('watched')
+        useCart.cartadded = false
+    },3000))
+
+    watch(isAlreadyAdded,() => setTimeout(() => {
+        console.log('watched')
+        useCart.cartAlreadyAdded = false
+    },3000))
 
 
     onMounted(async () => {
@@ -438,7 +453,8 @@
         text-decoration: line-through;
     }
 
-    .btn-container{
+
+    .btn-container .cart-column{
         width: 100%;
         height: 60px;
         display: grid;
@@ -449,17 +465,17 @@
    
 
     /* ADD TO CART BTN */
-    .btn-container .addToCart-btn{
+    .btn-container .cart-column .addToCart-btn{
         width: 100%;
         height: 100%;
         cursor: pointer;
     }
 
-    .btn-container .addToCart-btn .btn-icon{
+    .btn-container .cart-column .addToCart-btn .btn-icon{
        margin-right:10px ;
     }
 
-    .btn-container .addToCart-btn button.btn-add-cart{
+    .btn-container .cart-column .addToCart-btn button.btn-add-cart{
         all: unset;
         display: flex;
         justify-content: center;
@@ -473,7 +489,7 @@
         transition: 0.3s;
     }
 
-    .btn-container .addToCart-btn button.btn-add-cart:hover{
+    .btn-container .cart-column .addToCart-btn button.btn-add-cart:hover{
         box-shadow: 0px 10px 20px rgba(228, 116, 12, 0.3);
     }
 
@@ -671,7 +687,7 @@
             font-size: 13px;
         }
 
-        .btn-container{
+        .btn-container .cart-column{
             grid-template-columns: 100%;
             row-gap: 20px;
             height: 130px;
