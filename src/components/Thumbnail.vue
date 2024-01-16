@@ -89,11 +89,15 @@
         }
     }
 
-    @media (width <= 320px){
+    @media (width <= 425px){
         .image-thumbnail{
             width: 100%;
+            display: grid;
             grid-template-columns: repeat(3,auto);
         }
+    }
+
+    @media (width <= 320px){
 
         .thumbnail{
             height: 70px;

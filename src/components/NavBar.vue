@@ -12,11 +12,11 @@
                 <img src="../assets/vue-logo.jpg" 
                      alt="">
             </router-link >
-
-            <div class="icon-mobile">
+            
+            <router-link :to="{name:'LandingPage'}" class="icon-mobile">
                 <img src="../assets/logo.png" 
                      alt="">
-            </div>
+            </router-link>
         </div>
 
         <div class="profile">
@@ -375,7 +375,7 @@
         }
     }
 
-    @media(width <= 320px){
+    @media(width <= 375px){
         .navigation .icon-desktop{
             display: none;
         }
@@ -391,7 +391,6 @@
             height: inherit;
             object-fit: cover;
         }
-
     }
 
     @keyframes slide {

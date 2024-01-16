@@ -38,6 +38,7 @@ export const carts = defineStore('carts',{
         },
         async RemoveCartItem(index){
             this.cartItems = this.cartItems.filter((_, i) => i !== index);
+            this.cartItemsIdArray = this.cartItems.filter((_, i) => i !== index);
             this.cartQuantity--
         }
     }
